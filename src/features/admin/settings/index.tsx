@@ -5,7 +5,6 @@ import Input from '../../../components/ui/Input'
 
 const SettingsPage = () => {
   const [branding, setBranding] = useState(initialBranding)
-
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <Card title="Branding / White-label settings">
@@ -20,7 +19,8 @@ const SettingsPage = () => {
       </Card>
       <Card title="Live preview">
         <div className="rounded-xl border p-4" style={{ borderColor: branding.primaryColor }}>
-          <img src={branding.logoUrl} alt={branding.institutionName} className="mb-3 h-12 w-auto" />
+          <img src={initialBranding.logoUrl} alt={branding.institutionName} className="mb-3 h-12 w-auto" />
+          <p className="mb-2 text-xs text-slate-500">Logo preview URL: {branding.logoUrl}</p>
           <h3 className="text-lg font-semibold" style={{ color: branding.primaryColor }}>{branding.institutionName}</h3>
           <p className="text-sm" style={{ color: branding.secondaryColor }}>Support: {branding.supportPhone} • {branding.supportEmail}</p>
           <p className="mt-2 text-xs text-slate-500">Preview only. Persisting branding can be integrated with backend config APIs later.</p>
