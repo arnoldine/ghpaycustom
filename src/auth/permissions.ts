@@ -1,0 +1,42 @@
+import type { Role } from '../types/auth'
+
+export type AdminPermission =
+  | 'VIEW_DASHBOARD'
+  | 'MANAGE_CUSTOMERS'
+  | 'MANAGE_WALLETS'
+  | 'MONITOR_TRANSACTIONS'
+  | 'RUN_RECONCILIATION'
+  | 'MANAGE_AGENTS'
+  | 'MANAGE_MERCHANTS'
+  | 'MANAGE_DISPUTES'
+  | 'VIEW_RISK'
+  | 'VIEW_REPORTS'
+  | 'VIEW_AUDIT'
+  | 'MANAGE_SETTINGS'
+
+const rolePermissions: Record<Role, AdminPermission[]> = {
+  CUSTOMER: [],
+  ADMIN: [
+    'VIEW_DASHBOARD',
+    'MANAGE_CUSTOMERS',
+    'MANAGE_WALLETS',
+    'MONITOR_TRANSACTIONS',
+    'RUN_RECONCILIATION',
+    'MANAGE_AGENTS',
+    'MANAGE_MERCHANTS',
+    'MANAGE_DISPUTES',
+    'VIEW_RISK',
+    'VIEW_REPORTS',
+    'VIEW_AUDIT',
+    'MANAGE_SETTINGS',
+  ],
+  OPERATIONS: ['VIEW_DASHBOARD', 'MANAGE_CUSTOMERS', 'MANAGE_WALLETS', 'MONITOR_TRANSACTIONS', 'RUN_RECONCILIATION', 'VIEW_REPORTS'],
+  COMPLIANCE: ['VIEW_DASHBOARD', 'MONITOR_TRANSACTIONS', 'VIEW_RISK', 'VIEW_AUDIT'],
+  SUPPORT: ['VIEW_DASHBOARD', 'MANAGE_CUSTOMERS', 'MANAGE_DISPUTES'],
+  AGENT_MANAGER: ['MANAGE_AGENTS'],
+  MERCHANT_MANAGER: ['MANAGE_MERCHANTS'],
+  AUDITOR: ['VIEW_DASHBOARD', 'RUN_RECONCILIATION', 'VIEW_REPORTS', 'VIEW_AUDIT'],
+}
+
+export const hasPermission = (role: Role | undefined, permission: AdminPermission) =>
+  !!role && rolePermissions[role].includes(permission)
