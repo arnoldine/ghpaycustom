@@ -1,4 +1,4 @@
-import { useAuth } from '../../auth/AuthProvider'
+import { useAuth } from '../../auth/useAuth'
 import { Modal } from './Modal'
 
 export const SessionTimeoutWarning = () => {

@@ -2,7 +2,7 @@ import { Navigate } from 'react-router-dom'
 import type { Role } from '../types/auth'
 import type { AdminPermission } from './permissions'
 import { hasPermission } from './permissions'
-import { useAuth } from './AuthProvider'
+import { useAuth } from './useAuth'
 
 interface ProtectedRouteProps {
   children: React.ReactNode

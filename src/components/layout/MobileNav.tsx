@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import type { NavItem } from '../../config/navigation'
-import { useAuth } from '../../auth/AuthProvider'
+import { useAuth } from '../../auth/useAuth'
 
 export const MobileNav = ({ items }: { items: NavItem[] }) => {
   const { session } = useAuth()

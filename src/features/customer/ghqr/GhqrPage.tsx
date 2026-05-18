@@ -9,7 +9,6 @@ import { Button } from '../../../components/ui/Button'
 import { Card } from '../../../components/ui/Card'
 import { Input } from '../../../components/ui/Input'
 import { Modal } from '../../../components/ui/Modal'
-import type { PaymentRequest } from '../../../types/transaction'
 
 const schema = z.object({
   merchantId: z.string().min(3),
@@ -18,14 +17,17 @@ const schema = z.object({
   pin: z.string().length(4),
 })
 
+type FormData = z.input<typeof schema>
+type FormOutput = z.output<typeof schema>
+
 export const GhqrPage = () => {
   const navigate = useNavigate()
   const mutation = useMutation({ mutationFn: paymentApi.payGhQR })
   const [confirmOpen, setConfirmOpen] = useState(false)
-  const [payload, setPayload] = useState<PaymentRequest | null>(null)
-  const { register, handleSubmit } = useForm<PaymentRequest>({ resolver: zodResolver(schema) })
+  const [payload, setPayload] = useState<FormOutput | null>(null)
+  const { register, handleSubmit } = useForm<FormData, unknown, FormOutput>({ resolver: zodResolver(schema) })
 
-  const submit = (data: PaymentRequest) => {
+  const submit = (data: FormOutput) => {
     setPayload(data)
     setConfirmOpen(true)
   }

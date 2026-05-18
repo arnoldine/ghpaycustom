@@ -1,4 +1,4 @@
-import type { AuthSession, LoginRequest, Role, User } from '../types/auth'
+import type { AuthSession, LoginRequest, User } from '../types/auth'
 import type { AdminCustomerSummary, AdminDashboardPayload } from '../types/admin'
 import type { CustomerProfile, Device } from '../types/customer'
 import type { KycRequest } from '../types/kyc'

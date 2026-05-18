@@ -8,7 +8,9 @@ import { Badge } from '../../../components/ui/Badge'
 import { Button } from '../../../components/ui/Button'
 import { Card } from '../../../components/ui/Card'
 import { Input } from '../../../components/ui/Input'
-import type { CashTransactionRequest } from '../../../types/wallet'
+
+type FormData = z.input<typeof schema>
+type FormOutput = z.output<typeof schema>
 
 const schema = z.object({
   amount: z.coerce.number().positive(),
@@ -21,9 +23,9 @@ const schema = z.object({
 export const CashInPage = () => {
   const [status, setStatus] = useState<string>('')
   const mutation = useMutation({ mutationFn: transferApi.cashIn })
-  const { register, handleSubmit, formState: { errors } } = useForm<CashTransactionRequest>({ resolver: zodResolver(schema) })
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData, unknown, FormOutput>({ resolver: zodResolver(schema) })
 
-  const submit = async (data: CashTransactionRequest) => {
+  const submit = async (data: FormOutput) => {
     const response = await mutation.mutateAsync(data)
     setStatus(response.data?.status ?? '')
   }

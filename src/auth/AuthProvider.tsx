@@ -1,23 +1,16 @@
-import { createContext, useContext, useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { authApi } from '../api/authApi'
 import { appConfig } from '../config/appConfig'
-import type { LoginRequest } from '../types/auth'
-import { loadPersistedSession, persistSession, useAuthStore } from './useAuth'
-
-interface AuthContextValue {
-  session: ReturnType<typeof useAuthStore.getState>['session']
-  warningVisible: boolean
-  warningCountdown: number
-  login: (payload: LoginRequest) => Promise<{ success: boolean; message: string }>
-  logout: () => Promise<void>
-  tickActivity: () => void
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null)
+import { AuthContext, type AuthContextValue } from './authContext'
+import { loadPersistedSession, persistSession, useAuthStore } from './authStore'
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { session, setSession, warningVisible, warningCountdown, setWarning } = useAuthStore()
-  const lastActivityRef = useRef(Date.now())
+  const lastActivityRef = useRef(0)
+
+  useEffect(() => {
+    lastActivityRef.current = Date.now()
+  }, [])
 
   useEffect(() => {
     const persisted = loadPersistedSession()
@@ -84,10 +77,4 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export const useAuth = () => {
-  const context = useContext(AuthContext)
-  if (!context) throw new Error('useAuth must be used within AuthProvider')
-  return context
 }

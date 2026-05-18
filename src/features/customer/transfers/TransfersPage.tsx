@@ -12,6 +12,9 @@ import { Modal } from '../../../components/ui/Modal'
 import { Select } from '../../../components/ui/Select'
 import type { TransferRequest } from '../../../types/wallet'
 
+type FormData = z.input<typeof schema>
+type FormOutput = z.output<typeof schema>
+
 const schema = z.object({
   destinationType: z.enum(['GHANAPAY_WALLET', 'BANK_ACCOUNT', 'MOBILE_MONEY']),
   recipientName: z.string().min(2),
@@ -32,10 +35,10 @@ export const TransfersPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<TransferRequest>({ resolver: zodResolver(schema), defaultValues: { destinationType: 'GHANAPAY_WALLET' } })
+  } = useForm<FormData, unknown, FormOutput>({ resolver: zodResolver(schema), defaultValues: { destinationType: 'GHANAPAY_WALLET' } })
 
-  const submit = (payload: TransferRequest) => {
-    setPendingPayload(payload)
+  const submit = (payload: FormOutput) => {
+    setPendingPayload(payload as TransferRequest)
     setConfirmOpen(true)
   }
 

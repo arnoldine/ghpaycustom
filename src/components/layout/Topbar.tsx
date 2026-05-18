@@ -1,5 +1,5 @@
 import { defaultBranding } from '../../config/branding'
-import { useAuth } from '../../auth/AuthProvider'
+import { useAuth } from '../../auth/useAuth'
 import { Button } from '../ui/Button'
 
 export const Topbar = () => {

@@ -7,7 +7,8 @@ import { paymentApi } from '../../../api/paymentApi'
 import { Button } from '../../../components/ui/Button'
 import { Card } from '../../../components/ui/Card'
 import { Input } from '../../../components/ui/Input'
-import type { PaymentRequest } from '../../../types/transaction'
+type FormData = z.input<typeof schema>
+type FormOutput = z.output<typeof schema>
 
 const schema = z.object({
   phone: z.string().min(10),
@@ -19,9 +20,9 @@ const schema = z.object({
 export const AirtimePage = () => {
   const navigate = useNavigate()
   const mutation = useMutation({ mutationFn: paymentApi.buyAirtime })
-  const { register, handleSubmit } = useForm<PaymentRequest>({ resolver: zodResolver(schema), defaultValues: { narration: 'Airtime purchase' } })
+  const { register, handleSubmit } = useForm<FormData, unknown, FormOutput>({ resolver: zodResolver(schema), defaultValues: { narration: 'Airtime purchase' } })
 
-  const submit = async (data: PaymentRequest) => {
+  const submit = async (data: FormOutput) => {
     const response = await mutation.mutateAsync(data)
     if (response.success && response.data) navigate(`/receipt/${response.data.id}`)
   }
