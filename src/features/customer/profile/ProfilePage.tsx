@@ -1,13 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
 import { adminApi } from '../../../api/adminApi'
 import { Card } from '../../../components/ui/Card'
+import { useAuth } from '../../../auth/useAuth'
 import { LoadingState } from '../../../components/ui/LoadingState'
 import { maskGhanaCard, maskPhone } from '../../../utils/validation'
 
 export const ProfilePage = () => {
-  const query = useQuery({ queryKey: ['profile'], queryFn: () => adminApi.getCustomers('Kwame') })
+  const { session } = useAuth()
+  const customerId = session?.user.customerId ?? 'c1'
+  const query = useQuery({ queryKey: ['profile', customerId], queryFn: () => adminApi.getCustomerProfile(customerId) })
   if (query.isLoading) return <LoadingState />
-  const customer = query.data?.data[0]
+  const customer = query.data?.data
   if (!customer) return null
   return (
     <Card className="space-y-2">

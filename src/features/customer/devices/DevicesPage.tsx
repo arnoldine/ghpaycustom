@@ -1,19 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { walletApi } from '../../../api/walletApi'
+import { useAuth } from '../../../auth/useAuth'
 import { Badge } from '../../../components/ui/Badge'
 import { Button } from '../../../components/ui/Button'
 import { Card } from '../../../components/ui/Card'
 
 export const DevicesPage = () => {
+  const { session } = useAuth()
+  const customerId = session?.user.customerId ?? 'c1'
   const queryClient = useQueryClient()
-  const devices = useQuery({ queryKey: ['device-list'], queryFn: walletApi.getDevices })
+  const devices = useQuery({
+    queryKey: ['device-list', customerId],
+    queryFn: () => walletApi.getDevices(customerId),
+  })
   const registerMutation = useMutation({
-    mutationFn: walletApi.registerDevice,
-    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['device-list'] }),
+    mutationFn: () => walletApi.registerDevice(customerId),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['device-list', customerId] }),
   })
   const unlinkMutation = useMutation({
-    mutationFn: walletApi.unlinkDevice,
-    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['device-list'] }),
+    mutationFn: (deviceId: string) => walletApi.unlinkDevice(deviceId, customerId),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['device-list', customerId] }),
   })
 
   const linked = (devices.data?.data ?? []).some((d) => d.linked)

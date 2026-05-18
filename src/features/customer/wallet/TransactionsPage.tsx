@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { walletApi } from '../../../api/walletApi'
+import { useAuth } from '../../../auth/useAuth'
 import { Badge } from '../../../components/ui/Badge'
 import { Card } from '../../../components/ui/Card'
 import { DataTable } from '../../../components/ui/DataTable'
@@ -9,7 +10,12 @@ import { formatGhs } from '../../../utils/currency'
 import { formatDateTime } from '../../../utils/dates'
 
 export const TransactionsPage = () => {
-  const query = useQuery({ queryKey: ['customer-transactions'], queryFn: walletApi.getTransactions })
+  const { session } = useAuth()
+  const customerId = session?.user.customerId ?? 'c1'
+  const query = useQuery({
+    queryKey: ['customer-transactions', customerId],
+    queryFn: () => walletApi.getTransactions(customerId),
+  })
   if (query.isLoading) return <LoadingState />
   return (
     <Card>

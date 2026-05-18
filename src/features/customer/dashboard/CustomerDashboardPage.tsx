@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { adminApi } from '../../../api/adminApi'
+import { useAuth } from '../../../auth/useAuth'
 import { walletApi } from '../../../api/walletApi'
 import { Badge } from '../../../components/ui/Badge'
 import { Card } from '../../../components/ui/Card'
@@ -20,14 +21,16 @@ const quickActions = [
 ]
 
 export const CustomerDashboardPage = () => {
-  const balance = useQuery({ queryKey: ['balance'], queryFn: walletApi.getBalance })
-  const mini = useQuery({ queryKey: ['mini-statement'], queryFn: walletApi.getMiniStatement })
-  const devices = useQuery({ queryKey: ['devices'], queryFn: walletApi.getDevices })
-  const customer = useQuery({ queryKey: ['customer-summary'], queryFn: () => adminApi.getCustomers('Kwame') })
+  const { session } = useAuth()
+  const customerId = session?.user.customerId ?? 'c1'
+  const balance = useQuery({ queryKey: ['balance', customerId], queryFn: () => walletApi.getBalance(customerId) })
+  const mini = useQuery({ queryKey: ['mini-statement', customerId], queryFn: () => walletApi.getMiniStatement(customerId) })
+  const devices = useQuery({ queryKey: ['devices', customerId], queryFn: () => walletApi.getDevices(customerId) })
+  const customer = useQuery({ queryKey: ['customer-summary', customerId], queryFn: () => adminApi.getCustomerProfile(customerId) })
 
   if (balance.isLoading || mini.isLoading || devices.isLoading || customer.isLoading) return <LoadingState />
 
-  const currentCustomer = customer.data?.data[0]
+  const currentCustomer = customer.data?.data
   return (
     <div className="space-y-4">
       <div className="grid gap-3 sm:grid-cols-2">

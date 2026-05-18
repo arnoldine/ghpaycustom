@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { z } from 'zod'
 import type { AuthSession } from '../types/auth'
 import { appConfig } from '../config/appConfig'
 
@@ -21,13 +22,33 @@ export const useAuthStore = create<AuthState>((set) => ({
 
 const persistKey = appConfig.demoPersistenceKey
 
+const authSessionSchema = z.object({
+  token: z.string().min(1),
+  expiresAt: z.string().min(1),
+  user: z.object({
+    id: z.string().min(1),
+    fullName: z.string().min(1),
+    email: z.string().email(),
+    phone: z.string().min(5),
+    role: z.enum(['CUSTOMER', 'ADMIN', 'OPERATIONS', 'COMPLIANCE', 'SUPPORT', 'AGENT_MANAGER', 'MERCHANT_MANAGER', 'AUDITOR']),
+    customerId: z.string().optional(),
+  }),
+})
+
 export const loadPersistedSession = () => {
   if (import.meta.env.VITE_DEMO_PERSIST !== 'true') return null
   const raw = localStorage.getItem(persistKey)
   if (!raw) return null
   try {
-    return JSON.parse(raw) as AuthSession
-  } catch {
+    const parsed = JSON.parse(raw)
+    const result = authSessionSchema.safeParse(parsed)
+    if (!result.success) {
+      console.warn('Persisted demo session failed schema validation', result.error.flatten())
+      return null
+    }
+    return result.data as AuthSession
+  } catch (error) {
+    console.warn('Failed to parse persisted demo session', error)
     return null
   }
 }

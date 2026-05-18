@@ -27,6 +27,16 @@ npm run lint
 npm run build
 ```
 
+### Demo Environment Variables
+
+Create `.env` with:
+
+```bash
+VITE_DEMO_PIN=1234
+VITE_ENABLE_MOCK_PIN=true
+```
+
+
 ## Mock Login Credentials
 
 - `customer@demo.com / Password123!`

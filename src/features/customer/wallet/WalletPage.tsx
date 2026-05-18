@@ -1,11 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 import { walletApi } from '../../../api/walletApi'
+import { useAuth } from '../../../auth/useAuth'
 import { Card } from '../../../components/ui/Card'
 import { LoadingState } from '../../../components/ui/LoadingState'
 import { formatGhs } from '../../../utils/currency'
 
 export const WalletPage = () => {
-  const balance = useQuery({ queryKey: ['wallet-balance'], queryFn: walletApi.getBalance })
+  const { session } = useAuth()
+  const customerId = session?.user.customerId ?? 'c1'
+  const balance = useQuery({ queryKey: ['wallet-balance', customerId], queryFn: () => walletApi.getBalance(customerId) })
   if (balance.isLoading) return <LoadingState />
   return (
     <Card className="space-y-2">

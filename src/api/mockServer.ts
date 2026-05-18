@@ -135,6 +135,8 @@ let transactions: Transaction[] = [
 ]
 
 let pinAttempts = 0
+const mockPinEnabled = import.meta.env.DEV || import.meta.env.VITE_ENABLE_MOCK_PIN === 'true'
+const configuredDemoPin = import.meta.env.VITE_DEMO_PIN
 
 const respond = <T>(data: T, message = 'Request successful', success = true): ApiResponse<T> => ({
   success,
@@ -146,7 +148,10 @@ const respond = <T>(data: T, message = 'Request successful', success = true): Ap
 })
 
 const assertPin = (pin: string) => {
-  if (pin !== '1234') {
+  if (!mockPinEnabled) throw new Error('PIN validation disabled. Enable mock PIN mode for demo transactions.')
+  if (!configuredDemoPin) throw new Error('Demo PIN not configured. Set VITE_DEMO_PIN to enable transaction simulation.')
+
+  if (pin !== configuredDemoPin) {
     pinAttempts += 1
     if (pinAttempts >= 3) throw new Error('Too many failed PIN attempts. Please wait and retry.')
     throw new Error(`Invalid PIN. Attempts remaining: ${Math.max(0, 3 - pinAttempts)}`)
@@ -333,6 +338,13 @@ export const mockServer = {
         ],
       }),
     )
+  },
+
+
+
+  async getCustomerProfile(customerId = 'c1') {
+    const customer = customers.find((c) => c.id === customerId) ?? null
+    return wait(respond(customer))
   },
 
   async getCustomers(search = '') {

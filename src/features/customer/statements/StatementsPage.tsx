@@ -1,13 +1,22 @@
 import { useQuery } from '@tanstack/react-query'
 import { walletApi } from '../../../api/walletApi'
+import { useAuth } from '../../../auth/useAuth'
 import { Card } from '../../../components/ui/Card'
 import { DataTable } from '../../../components/ui/DataTable'
 import { formatDateTime } from '../../../utils/dates'
 import { formatGhs } from '../../../utils/currency'
 
 export const StatementsPage = () => {
-  const mini = useQuery({ queryKey: ['mini-statement-screen'], queryFn: walletApi.getMiniStatement })
-  const full = useQuery({ queryKey: ['full-statement-screen'], queryFn: walletApi.getTransactions })
+  const { session } = useAuth()
+  const customerId = session?.user.customerId ?? 'c1'
+  const mini = useQuery({
+    queryKey: ['mini-statement-screen', customerId],
+    queryFn: () => walletApi.getMiniStatement(customerId),
+  })
+  const full = useQuery({
+    queryKey: ['full-statement-screen', customerId],
+    queryFn: () => walletApi.getTransactions(customerId),
+  })
 
   return (
     <div className="space-y-4">

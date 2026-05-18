@@ -3,16 +3,19 @@ import { defaultBranding } from '../../../config/branding'
 import { Button } from '../../../components/ui/Button'
 import { Card } from '../../../components/ui/Card'
 import { Input } from '../../../components/ui/Input'
+import { hexToRgba, isValidHexColor } from '../../../utils/validation'
 
 export const SettingsPage = () => {
   const [branding, setBranding] = useState(defaultBranding)
+  const safePrimary = useMemo(() => (isValidHexColor(branding.primaryColor) ? branding.primaryColor : defaultBranding.primaryColor), [branding.primaryColor])
+
   const previewStyle = useMemo(
     () => ({
-      borderColor: branding.primaryColor,
-      color: branding.primaryColor,
-      background: `${branding.primaryColor}10`,
+      borderColor: safePrimary,
+      color: safePrimary,
+      background: hexToRgba(safePrimary, 0.1),
     }),
-    [branding],
+    [safePrimary],
   )
 
   return (
@@ -31,7 +34,7 @@ export const SettingsPage = () => {
       </Card>
       <Card style={previewStyle} className="space-y-2 border-2">
         <h2 className="text-lg font-semibold">Brand Preview</h2>
-        <img src={branding.logoUrl} alt="Brand Logo" className="h-10" />
+        <div className="rounded border border-dashed p-2 text-sm">Logo URL preview: {branding.logoUrl || defaultBranding.logoUrl}</div>
         <p>{branding.institutionName}</p>
         <p>Support: {branding.supportPhone} • {branding.supportEmail}</p>
         <p>Currency: {branding.currency}</p>
